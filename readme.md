@@ -4,7 +4,9 @@
 
 1. get attend info list
 2. get subject info list
-3. get lecture material list
+3. get attend info list
+4. get assignment info list
+5. download lecture material
 
 ## How to use
 ### Clone repository
