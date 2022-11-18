@@ -2,6 +2,7 @@ import re
 import requests
 from bs4 import BeautifulSoup as bs
 import os
+from urllib.parse import urlparse, parse_qs
 
 class client:
     
@@ -326,3 +327,37 @@ class client:
                 os.makedirs(tmp_path)
             self.download_lecture_material(tmp_path, subject_id)
     
+    def download_lecture_material_link(self, path: str, link: str) -> None:
+        header = {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0",
+            "Content-Type":	"application/x-www-form-urlencoded",
+            "X-Requested-With":	"XMLHttpRequest",
+            "Host": "eclass.seoultech.ac.kr",
+            "Origin": "https://eclass.seoultech.ac.kr",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin"
+        }
+
+        cookie = {
+            "_language_": "ko",
+            "WMONID": self.wmonId,
+            "LMS_SESSIONID": self._sessionId
+        }
+        
+        ky = parse_qs(urlparse(link).query)['ky'][0]
+        
+        payload = {
+            "KJKEY": ky
+        }
+
+        requests.post("https://eclass.seoultech.ac.kr/ilos/st/course/eclass_room_submain.acl", headers=header, cookies=cookie, data=payload)
+        
+        with requests.get(link, stream=True, cookies=cookie) as r:
+            r.raise_for_status()
+            with open(path, "wb") as wf:
+                for chunk in r.iter_content(chunk_size=1024):
+                    wf.write(chunk)
+        
