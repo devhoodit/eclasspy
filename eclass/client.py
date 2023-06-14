@@ -307,6 +307,7 @@ class client:
         if lecture_material_info:
             for index in lecture_material_info:
                 title = index[0]
+                title = title.replace(":", "")
                 lecture_path = os.path.join(basepath, title)
                 if not os.path.exists(lecture_path):
                     os.makedirs(lecture_path)
